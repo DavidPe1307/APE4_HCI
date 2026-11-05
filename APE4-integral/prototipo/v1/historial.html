@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historial de pagos · APE v1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<header class="barra"><strong>Portal de Pagos Académicos · UTA</strong><span class="version" data-version></span><a href="inicio.html">Inicio</a></header>
+<main id="contenido">
+  <h1 id="titulo" tabindex="-1">Historial de pagos</h1>
+  <p>Aquí quedan todos sus comprobantes para volver a consultarlos.</p>
+  <div id="lista"></div>
+  <div class="acciones"><a class="btn primario" href="inicio.html">Pagar matrícula</a></div>
+</main>
+<script src="comun.js"></script>
+<script>
+  const h = leerHistorial();
+  const el = document.getElementById('lista');
+  if (!h.length) el.innerHTML = '<p class="vacio">Todavía no tiene pagos registrados.<br>Cuando pague, su comprobante aparecerá aquí.</p>';
+  else el.innerHTML = '<ul class="lista">' + h.map(r =>
+    '<li><span><b>' + r.num + '</b> · Matrícula · ' + usd(r.total) + '<br><small>' + r.fecha + ' · ' +
+    (r.metodo === 'tarjeta' ? 'Tarjeta •••• ' + r.fin : 'Transferencia') + '</small></span>' +
+    '<a class="btn secundario" href="confirmacion.html?ver=' + encodeURIComponent(r.num) + '">Ver comprobante</a></li>').join('') + '</ul>';
+  document.getElementById('titulo').focus();
+</script>
+</body>
+</html>
