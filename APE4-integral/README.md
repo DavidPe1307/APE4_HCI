@@ -23,7 +23,8 @@ Continuación de la **Prueba Práctica Integradora** (caso *Pagos académicos*, 
 
 ## Cómo abrir el prototipo
 - **v1 (Fase 2):** `prototipo/v1/index.html`, con doble clic · *pendiente*
-- **v2 (Fase 4):** `prototipo/v2/index.html`, con doble clic. Por ahora contiene la base de la v2 de la prueba y la corrección de P1 (`3701ee9`)
+- **v2 (Fase 4):** `prototipo/v2/index.html`, con doble clic · *pendiente*
+- **Base de la prueba (punto de partida):** `prototipo/base-prueba/index.html`, con doble clic. Es la v2 de la prueba integradora con la corrección de P1 (`3701ee9`)
 - No necesita instalación ni servidor.
 
 ## Avance por fase
