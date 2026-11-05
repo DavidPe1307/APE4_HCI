@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio · v2</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+table{width:100%;border-collapse:collapse;margin-top:1rem}
+caption{text-align:left;font-weight:600}
+th,td{padding:.4rem;border-bottom:1px solid #d1d5db;text-align:left}
+th:last-child,td:last-child{text-align:right}
+tfoot th,tfoot td{font-size:1.1rem;border-top:2px solid var(--texto)}
+.aviso{padding:.75rem;border:1px solid #9ca3af;border-radius:6px;background:#fff;margin-bottom:1rem}
+.acciones{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap}
+.demo{margin-top:2rem;font-size:.85rem}
+h1:focus{outline:3px solid #1a56db;outline-offset:4px}
+</style>
+</head>
+<body>
+<main>
+<ol class="pasos" aria-label="Pasos del pago"><li aria-current="step">1. Revisar</li><li>2. Pagar</li><li>3. Comprobante</li></ol>
+<p class="entidad" id="entidad"></p>
+<h1 id="titulo">Inicio</h1>
+<div id="aviso" class="aviso" role="status" hidden></div>
+<p id="resumen"></p>
+<section id="detalle" aria-labelledby="titulo"></section>
+<div class="acciones">
+  <a id="continuar" class="btn" href="pago.html">Continuar al pago</a>
+  <button type="button" id="cancelar" class="secundario">Cancelar</button>
+</div>
+<nav class="demo" aria-label="Caso de demostración">
+  Caso de demostración:
+  <a id="c03" href="inicio.html?caso=03">IHC-03</a> ·
+  <a id="c04" href="inicio.html?caso=04">IHC-04</a>
+</nav>
+</main>
+<script>
+(function(){
+  var CASOS = {
+    '03': {
+      titulo: 'Inicio · Consulta de matrícula',
+      resumen: 'Revisa cuánto debes pagar por tu matrícula antes de continuar.',
+      caption: 'Detalle de la matrícula',
+      filas: [['Matrícula ordinaria', 85], ['Seguro estudiantil', 5], ['Comisión por pago con tarjeta', 2.5]],
+      total: ['Total a pagar', 92.5],
+      extra: 'v2: el total ya incluye la comisión de la tarjeta ($2.50). No habrá cargos adicionales al pagar.',
+      boton: 'Continuar al pago · Total $92.50'
+    },
+    '04': {
+      titulo: 'Inicio · Pago por otra persona',
+      resumen: 'Vas a pagar como representante por Ana Torres (estudiante).',
+      caption: 'Concepto a pagar',
+      filas: [['Pensión de octubre', 60]],
+      total: ['Valor a pagar', 60],
+      extra: 'Método de pago guardado: tarjeta terminada en 4821',
+      boton: 'Continuar al pago'
+    }
+  };
+
+  var p = new URLSearchParams(location.search);
+  var caso = CASOS[p.get('caso')] ? p.get('caso') : '03';
+  var c = CASOS[caso];
+
+  function el(tag, txt){ var e = document.createElement(tag); if (txt !== undefined) e.textContent = txt; return e; }
+  function usd(n){ return '$' + n.toFixed(2); }
+
+  document.getElementById('titulo').textContent = c.titulo;
+  document.getElementById('resumen').textContent = c.resumen;
+
+  var t = el('table');
+  t.appendChild(el('caption', c.caption));
+  var cab = el('thead'), rc = el('tr');
+  rc.appendChild(el('th', 'Concepto')).setAttribute('scope', 'col');
+  rc.appendChild(el('th', 'Valor')).setAttribute('scope', 'col');
+  cab.appendChild(rc); t.appendChild(cab);
+  var cuerpo = el('tbody');
+  c.filas.forEach(function(f){
+    var r = el('tr'); r.appendChild(el('td', f[0])); r.appendChild(el('td', usd(f[1]))); cuerpo.appendChild(r);
+  });
+  t.appendChild(cuerpo);
+  var pie = el('tfoot'), rt = el('tr');
+  rt.appendChild(el('th', c.total[0])).setAttribute('scope', 'row');
+  rt.appendChild(el('td', usd(c.total[1])));
+  pie.appendChild(rt); t.appendChild(pie);
+  var det = document.getElementById('detalle');
+  det.appendChild(t);
+  if (c.extra) det.appendChild(el('p', c.extra));
+
+  var cont = document.getElementById('continuar');
+  cont.textContent = c.boton;
+  cont.href = 'pago.html?caso=' + caso;
+
+  document.getElementById('c' + caso).setAttribute('aria-current', 'true');
+  document.getElementById('c03').href = 'inicio.html?caso=03';
+  document.getElementById('c04').href = 'inicio.html?caso=04';
+
+  function cancelar(){ location.href = 'inicio.html?caso=' + caso + '&cancelado=1'; }
+  document.getElementById('cancelar').addEventListener('click', cancelar);
+
+  if (p.get('cancelado') === '1') {
+    var a = document.getElementById('aviso');
+    a.textContent = 'Cancelaste la operación. No se hizo ningún cobro.';
+    a.hidden = false; a.tabIndex = -1; a.focus();
+  } else {
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') cancelar(); });
+    // Foco inicial en el título (decisión D5): el teclado empieza en la pantalla
+    var h = document.getElementById('titulo'); h.tabIndex = -1; h.focus();
+  }
+})();
+</script>
+<script>
+(function(){var c=new URLSearchParams(location.search).get('caso')==='04'?'04':'03';
+document.getElementById('entidad').innerHTML=c==='04'
+ ? 'Paga: <b>usted, como representante</b> · Por: <b>Ana Torres</b> · A: <b>Universidad Técnica de Ambato</b>'
+ : 'Paga: <b>usted (estudiante)</b> · A: <b>Universidad Técnica de Ambato</b> · Concepto: matrícula';})();
+</script>
+</body>
+</html>

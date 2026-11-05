@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formulario de pago · v2</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+<ol class="pasos" aria-label="Pasos del pago"><li>1. Revisar</li><li aria-current="step">2. Pagar</li><li>3. Comprobante</li></ol>
+<p class="entidad" id="entidad"></p>
+<h1>Formulario de pago</h1>
+<div id="estado" role="status" aria-live="polite"></div>
+<section class="panel" aria-label="Resumen">
+  <div id="resumen"></div>
+</section>
+<form id="f" novalidate>
+  <div id="campos"></div>
+  <div class="acciones">
+    <button type="submit" id="pagar" class="primario">Pagar</button>
+    <button type="button" id="cancelar" class="secundario">Cancelar</button>
+  </div>
+</form>
+</main>
+<script>
+const caso = new URLSearchParams(location.search).get('caso') === '04' ? '04' : '03';
+const $ = id => document.getElementById(id);
+const inicio = 'inicio.html?caso=' + caso + '&cancelado=1';
+const fila = (a, b, c) => '<div class="fila ' + (c||'') + '"><span>' + a + '</span><span>' + b + '</span></div>';
+const AYUDA = { tarjeta: 'Los 16 números que están en el frente de su tarjeta, sin espacios.', correo: 'Aquí le enviaremos el comprobante del pago.' };
+const campo = (id, et, ph, extra) => '<label for="' + id + '">' + et + '</label><p class="ayuda" id="a-' + id + '">' + AYUDA[id] + '</p><input id="' + id + '" placeholder="' + ph + '" ' + (extra||'autocomplete="off"') + ' aria-describedby="a-' + id + ' m-' + id + '"><p class="msg" id="m-' + id + '"></p>';
+
+if (caso === '03') {
+  $('resumen').innerHTML = fila('Matrícula', '$85.00') + fila('Seguro', '$5.00') + fila('Comisión por pago con tarjeta', '$2.50') + fila('Total', '$92.50', 'total');
+  $('campos').innerHTML = campo('tarjeta', 'Número de tarjeta', '16 dígitos', 'inputmode="numeric" autocomplete="cc-number"') + campo('correo', 'Correo para el comprobante', 'nombre@correo.com');
+} else {
+  $('resumen').innerHTML = fila('Concepto', 'Pensión de octubre') + fila('Estudiante', 'Ana Torres') + fila('Método de pago', 'Tarjeta terminada en 4821') + fila('Valor', '$60.00', 'total');
+  $('campos').innerHTML = campo('correo', 'Correo para el comprobante', 'nombre@correo.com');
+}
+
+
+const reglas = {
+  tarjeta: v => /^\d{16}$/.test(v.replace(/\s/g, '')) ? '' : 'Escribe los 16 dígitos de tu tarjeta.',
+  correo: v => /^\S+@\S+\.\S+$/.test(v) ? '' : 'Escribe un correo válido, por ejemplo nombre@correo.com.'
+};
+function validar() {
+  let primero = null;
+  Object.keys(reglas).forEach(id => {
+    const el = $(id); if (!el) return;
+    const m = reglas[id](el.value.trim());
+    $('m-' + id).textContent = m;
+    el.setAttribute('aria-invalid', m ? 'true' : 'false');
+    if (m && !primero) primero = el;
+  });
+  if (primero) primero.focus();
+  return !primero;
+}
+
+$('cancelar').onclick = () => location.href = inicio;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') location.href = inicio; });
+
+$('f').addEventListener('submit', e => {
+  e.preventDefault();
+  $('estado').innerHTML = '';
+  if (!validar()) return;
+  // v2 (IHC-03): la comisión ya se muestra desde Inicio; el total no cambia al pagar.
+  // v2 (IHC-04): el botón se bloquea al primer clic y el estado lo explica, así no hay doble pago.
+  $('pagar').disabled = true;
+  $('pagar').textContent = 'Procesando…';
+  $('estado').innerHTML = '<div class="aviso ok">Procesando el pago… No cierres esta página ni vuelvas a pulsar Pagar.</div>';
+  setTimeout(() => {
+    const falla = (caso === '03' && $('tarjeta').value.trim().endsWith('0000'))
+               || (caso === '04' && $('correo').value.trim().endsWith('@falla.com'));
+    if (falla) {
+      $('pagar').disabled = false;
+      $('pagar').textContent = 'Pagar';
+      $('estado').innerHTML = '<div class="aviso" role="alert">No se pudo procesar el pago. <strong>No se hizo ningún cobro.</strong> Revisa los datos e inténtalo de nuevo.</div>';
+      $(caso === '03' ? 'tarjeta' : 'correo').focus(); // los datos escritos se conservan
+      return;
+    }
+    $('estado').innerHTML = '<div class="aviso ok">Pago realizado.</div>';
+    setTimeout(() => location.href = 'confirmacion.html?caso=' + caso, 600);
+  }, 1500);
+});
+</script>
+<script>
+(function(){var c=new URLSearchParams(location.search).get('caso')==='04'?'04':'03';
+document.getElementById('entidad').innerHTML=c==='04'
+ ? 'Paga: <b>usted, como representante</b> · Por: <b>Ana Torres</b> · A: <b>Universidad Técnica de Ambato</b>'
+ : 'Paga: <b>usted (estudiante)</b> · A: <b>Universidad Técnica de Ambato</b> · Concepto: matrícula';})();
+</script>
+</body>
+</html>
