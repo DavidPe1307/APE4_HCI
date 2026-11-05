@@ -1,1 +1,9 @@
-touchpoint,emocion_1_a_5,tipo_dato,justificacion
+n,touchpoint,accion_usuario,emocion_-2_a_+2,por_que,nivel,momento_de_verdad,problema,tipo_dato
+1,Entrar al portal,Abre el portal desde el celular,1,Se ve ordenado y muestra los pasos 1-2-3,Visceral,No,,Predicción del equipo
+2,Inicio: total $92.50 con comisión,Revisa cuánto debe pagar,0,Sabe el total antes de aceptar pero paga $2.50 de comisión sin otra opción,Reflexivo,No,P3,Predicción del equipo
+3,Continuar al pago,Pulsa «Continuar al pago · Total $92.50»,1,El botón repite el total y no hay sorpresas,Conductual,No,,Predicción del equipo
+4,Formulario de pago,Escribe la tarjeta y el correo,-1,La tarjeta se escribe «sin espacios» y es difícil revisarla; Esc o Cancelar borran todo sin avisar,Conductual,No,P2 · P4,Predicción del equipo
+5,Error de validación,Pulsa Pagar y ve errores,-1,Se entera del error recién al final y no al salir del campo,Conductual,No,P4,Predicción del equipo
+6,Pagar y esperar,Espera mientras procesa,0,El botón bloqueado y el aviso lo tranquilizan,Conductual,No,,Predicción del equipo
+7,Rechazo del banco,Lee que el pago no se procesó,-2,No sabe la causa ni qué dato cambiar; solo sabe que no le cobraron,Reflexivo,Sí (MV1),P1,Predicción del equipo
+8,Comprobante,Lee el comprobante,1,El total pagado es el aceptado pero no le confirman el envío al correo ni queda en un historial,Reflexivo,Sí (MV2),P5,Predicción del equipo
