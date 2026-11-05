@@ -24,3 +24,5 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .pasos li[aria-current="step"]{border-color:var(--acento);color:var(--tinta);font-weight:700}
 .entidad{font-size:.9rem;background:#fff;border:1px solid var(--borde);border-radius:6px;padding:.5rem .75rem;margin:0 0 1rem}
 .ayuda{font-size:.85rem;color:#5a6472;margin:.2rem 0 0}
+.aviso p{margin:.4rem 0 0}
+#alt{margin-top:1rem}
