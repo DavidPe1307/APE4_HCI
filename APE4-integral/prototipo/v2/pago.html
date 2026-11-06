@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagar matrícula · Formulario · APE v1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<header class="barra"><strong>Portal de Pagos Académicos · UTA</strong><span class="version" data-version></span><a href="historial.html" id="ir-historial">Historial de pagos</a></header>
+<main id="contenido">
+  <ol class="pasos" aria-label="Pasos del pago"><li class="hecho">1. Revisar ✓</li><li aria-current="step">2. Pagar</li><li>3. Comprobante</li></ol>
+  <p class="entidad">Paga: <b>usted (estudiante)</b> · A: <b>Universidad Técnica de Ambato</b> · Concepto: <b>matrícula</b></p>
+  <h1 id="titulo" tabindex="-1">Datos de pago</h1>
+
+  <!-- Estados: procesando / rechazo con causa (R5 · P1) -->
+  <div id="estado" role="status" aria-live="polite"></div>
+
+  <section class="panel" aria-label="Resumen del pago">
+    <div class="fila"><span>Método</span><span id="r-metodo"></span></div>
+    <div class="fila"><span>Subtotal</span><span id="r-sub"></span></div>
+    <div class="fila"><span>Comisión</span><span id="r-com"></span></div>
+    <div class="fila total"><span>Total a pagar</span><span id="r-total"></span></div>
+    <p class="ayuda"><a id="cambiar" href="inicio.html">Cambiar método de pago</a></p>
+  </section>
+
+  <form id="f" novalidate>
+    <p class="ayuda">Los campos marcados con * son obligatorios.</p>
+    <div id="campos"></div>
+    <div class="acciones">
+      <button type="submit" id="pagar" class="primario">Pagar</button>
+      <button type="button" id="cancelar" class="secundario">Cancelar</button>
+    </div>
+  </form>
+  <p class="demo">Simulación del banco (Mago de Oz): tarjeta terminada en <b>0000</b> = fondos insuficientes · en <b>0002</b> = tarjeta vencida.</p>
+</main>
+
+<!-- R4 · P2: confirmar antes de perder lo escrito -->
+<div class="modal-fondo" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-t" aria-describedby="m-d">
+  <div class="modal">
+    <h2 id="m-t">¿Salir sin pagar?</h2>
+    <p id="m-d">Se perderá lo que escribió en este formulario. No se ha hecho ningún cobro.</p>
+    <div class="acciones">
+      <button type="button" class="secundario" id="m-seguir">Seguir pagando</button>
+      <button type="button" class="peligro" id="m-salir">Salir sin pagar</button>
+    </div>
+  </div>
+</div>
+
+<script src="comun.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+let metodo = metodoActual();
+let destino = 'inicio.html?metodo=' + metodo;
+
+/* ---------- Campos según el método (R3 · P4) ---------- */
+const CAMPOS = {
+  tarjeta: [
+    { id:'tarjeta', et:'Número de tarjeta *', ph:'1234 5678 9012 3456', ayuda:'Los 16 números del frente de su tarjeta. Se agrupan de 4 en 4 para que los revise.', extra:'inputmode="numeric" autocomplete="cc-number" maxlength="19"' },
+    { id:'vence', et:'Vencimiento *', ph:'MM/AA', ayuda:'Mes y año que aparecen en la tarjeta, por ejemplo 08/28.', extra:'inputmode="numeric" maxlength="5" autocomplete="cc-exp"', mitad:true },
+    { id:'cvv', et:'Código de seguridad *', ph:'123', ayuda:'Los 3 números del reverso.', extra:'inputmode="numeric" maxlength="3" autocomplete="cc-csc"', mitad:true },
+    { id:'correo', et:'Correo para el comprobante *', ph:'nombre@uta.edu.ec', ayuda:'Aquí le enviaremos el comprobante del pago.', extra:'type="email" autocomplete="email"' }
+  ],
+  transferencia: [
+    { id:'banco', et:'Banco desde el que transfiere *', tipo:'select', opciones:['Banco Pichincha','Banco del Pacífico','Banco Guayaquil','Produbanco','Cooperativa Ambato'], ayuda:'Le mostraremos los datos de la cuenta de la UTA para ese banco.' },
+    { id:'correo', et:'Correo para el comprobante *', ph:'nombre@uta.edu.ec', ayuda:'Aquí le enviaremos el comprobante del pago.', extra:'type="email" autocomplete="email"' }
+  ]
+};
+const REGLAS = {
+  tarjeta: v => /^\d{16}$/.test(v.replace(/\s/g,'')) ? '' : 'El número debe tener 16 dígitos. Lleva ' + v.replace(/\D/g,'').length + '.',
+  vence: v => {
+    const m = /^(\d{2})\/(\d{2})$/.exec(v); if (!m) return 'Escriba mes y año así: 08/28.';
+    const mes = +m[1], an = 2000 + +m[2]; if (mes < 1 || mes > 12) return 'El mes debe estar entre 01 y 12.';
+    const hoy = new Date(); if (an < hoy.getFullYear() || (an === hoy.getFullYear() && mes < hoy.getMonth()+1)) return 'Esta fecha ya pasó: la tarjeta está vencida.';
+    return '';
+  },
+  cvv: v => /^\d{3}$/.test(v) ? '' : 'Escriba los 3 números del reverso.',
+  correo: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'Falta el dominio o la @. Ejemplo: nombre@uta.edu.ec',
+  banco: v => v ? '' : 'Elija el banco desde el que va a transferir.'
+};
+
+function pintarCampos(){
+  const c = CAMPOS[metodo]; let html = '', mitad = [];
+  const uno = f => {
+    const ctrl = f.tipo === 'select'
+      ? '<select id="'+f.id+'" aria-describedby="a-'+f.id+' m-'+f.id+'" aria-required="true"><option value="">— Elija —</option>'+f.opciones.map(o=>'<option>'+o+'</option>').join('')+'</select>'
+      : '<input id="'+f.id+'" placeholder="'+f.ph+'" '+(f.extra||'')+' aria-describedby="a-'+f.id+' m-'+f.id+'" aria-required="true">';
+    return '<div><label for="'+f.id+'">'+f.et+'</label>'+ctrl+'<p class="ayuda" id="a-'+f.id+'">'+f.ayuda+'</p><p class="msg" id="m-'+f.id+'"></p></div>';
+  };
+  c.forEach(f => {
+    if (f.mitad) { mitad.push(uno(f)); if (mitad.length === 2) { html += '<div class="dos">'+mitad.join('')+'</div>'; mitad = []; } }
+    else html += uno(f);
+  });
+  $('campos').innerHTML = html;
+  c.forEach(f => {
+    const el = $(f.id);
+    el.addEventListener('blur', () => { if (el.value !== '' || el.dataset.tocado) validarUno(f.id); el.dataset.tocado = 1; }); // P4: valida al salir
+    el.addEventListener('input', () => { if (el.getAttribute('aria-invalid') === 'true') validarUno(f.id); });
+  });
+  if ($('tarjeta')) $('tarjeta').addEventListener('input', e => {                               // P4: bloques de 4
+    const d = e.target.value.replace(/\D/g,'').slice(0,16); e.target.value = d.replace(/(\d{4})(?=\d)/g,'$1 ');
+  });
+  if ($('vence')) $('vence').addEventListener('input', e => {
+    let d = e.target.value.replace(/\D/g,'').slice(0,4); if (d.length > 2) d = d.slice(0,2) + '/' + d.slice(2); e.target.value = d;
+  });
+}
+function validarUno(id){
+  const el = $(id), m = REGLAS[id](el.value.trim());
+  $('m-'+id).textContent = m;
+  el.setAttribute('aria-invalid', m ? 'true' : 'false');
+  el.classList.toggle('valido', !m);
+  return m;
+}
+function validarTodo(){
+  let primero = null;
+  CAMPOS[metodo].forEach(f => { if (validarUno(f.id) && !primero) primero = $(f.id); });
+  if (primero) { primero.focus(); $('estado').innerHTML = '<div class="aviso" role="alert">Revise los campos marcados en rojo. Sus datos se conservan.</div>'; }
+  return !primero;
+}
+function pintarResumen(){
+  $('r-metodo').textContent = METODOS[metodo].nombre;
+  $('r-sub').textContent = usd(subtotal());
+  $('r-com').textContent = usd(METODOS[metodo].comision);
+  $('r-total').textContent = usd(totalDe(metodo));
+  $('pagar').textContent = 'Pagar ' + usd(totalDe(metodo));
+  $('cambiar').href = 'inicio.html?metodo=' + metodo;
+}
+
+/* ---------- Cancelar / Esc con confirmación (R4 · P2) ---------- */
+const hayDatos = () => CAMPOS[metodo].some(f => $(f.id) && $(f.id).value.trim() !== '');
+let focoPrevio = null;
+function salir(dest){
+  destino = dest;
+  if (!hayDatos()) { location.href = dest; return; }
+  focoPrevio = document.activeElement;
+  $('modal').classList.add('ver'); $('m-seguir').focus();
+}
+function cerrarModal(){ $('modal').classList.remove('ver'); if (focoPrevio) focoPrevio.focus(); }
+$('cancelar').onclick = () => salir('inicio.html?metodo=' + metodo);
+$('cambiar').addEventListener('click', e => { e.preventDefault(); salir('inicio.html?metodo=' + metodo); });
+$('ir-historial').addEventListener('click', e => { e.preventDefault(); salir('historial.html'); });
+$('m-seguir').onclick = cerrarModal;
+$('m-salir').onclick = () => { location.href = destino; };
+document.addEventListener('keydown', e => {
+  const abierto = $('modal').classList.contains('ver');
+  if (e.key === 'Escape') { e.preventDefault(); abierto ? cerrarModal() : salir('inicio.html?metodo=' + metodo); }
+  if (e.key === 'Tab' && abierto) {                                   // el foco no sale del modal
+    const a = $('m-seguir'), b = $('m-salir');
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); b.focus(); }
+    else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
+  }
+});
+
+/* ---------- Pagar: microinteracción, un solo cobro y rechazo con causa (R5 · P1) ---------- */
+let enviando = false;
+$('f').addEventListener('submit', e => {
+  e.preventDefault();
+  if (enviando) return;                       // un solo cobro aunque se pulse varias veces
+  $('estado').innerHTML = '';
+  if (!validarTodo()) return;
+  enviando = true;
+  const b = $('pagar'); b.disabled = true; b.innerHTML = '<span class="spin" aria-hidden="true"></span> Procesando…';
+  $('estado').innerHTML = '<div class="aviso info">Procesando el pago de ' + usd(totalDe(metodo)) + '… No cierre esta página ni vuelva a pulsar Pagar.</div>';
+  setTimeout(() => {
+    const num = $('tarjeta') ? $('tarjeta').value.replace(/\s/g,'') : '';
+    let causa = null, campo = null;
+    if (num.endsWith('0000')) { causa = 'La tarjeta terminada en 0000 <b>no tiene fondos suficientes</b> para ' + usd(totalDe(metodo)) + '.'; campo = 'tarjeta'; }
+    if (num.endsWith('0002')) { causa = 'El banco indica que la tarjeta <b>está vencida</b>. Revise la fecha de vencimiento o use otra tarjeta.'; campo = 'vence'; }
+    enviando = false; b.disabled = false; pintarResumen();
+    if (causa) {
+      $('estado').innerHTML = '<div class="aviso" role="alert"><b>El banco rechazó el pago. No se hizo ningún cobro.</b><br>' + causa +
+        '<div class="acciones"><button type="button" class="primario" id="reintentar">Corregir y reintentar</button>' +
+        '<button type="button" class="secundario" id="a-transfer">Pagar por transferencia · ' + usd(totalDe('transferencia')) + '</button></div></div>';
+      $('m-' + campo).textContent = campo === 'vence' ? 'Revise esta fecha: el banco la reporta vencida.' : 'Use otra tarjeta o pague por transferencia.';
+      $(campo).setAttribute('aria-invalid','true'); $(campo).classList.remove('valido');
+      $('reintentar').onclick = () => $(campo).focus();
+      $('a-transfer').onclick = () => { location.href = 'pago.html?metodo=transferencia'; };
+      $('reintentar').focus();
+      return;
+    }
+    const correo = $('correo').value.trim();
+    const p = new URLSearchParams({ metodo, correo, fin: num.slice(-4), banco: $('banco') ? $('banco').value : '' });
+    $('estado').innerHTML = '<div class="aviso ok">Pago realizado. Abriendo su comprobante…</div>';
+    setTimeout(() => location.href = 'confirmacion.html?' + p.toString(), 600);
+  }, 1600);
+});
+
+pintarCampos(); pintarResumen();
+$('titulo').focus();
+</script>
+</body>
+</html>

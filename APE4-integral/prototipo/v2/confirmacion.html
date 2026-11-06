@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comprobante · APE v1</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .check{font-size:2.4rem;text-align:center;color:var(--ok)}
+  dl{display:grid;grid-template-columns:1fr auto;gap:.45rem 1rem;margin:0}
+  dt{color:var(--suave)} dd{margin:0;text-align:right;font-weight:600}
+  dt.t,dd.t{border-top:2px solid var(--tinta);padding-top:.5rem;font-weight:700;color:var(--tinta);font-size:1.1rem}
+  @media print{.barra,.acciones,.pasos,.demo{display:none}}
+</style>
+</head>
+<body>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<header class="barra"><strong>Portal de Pagos Académicos · UTA</strong><span class="version" data-version></span><a href="historial.html">Historial de pagos</a></header>
+<main id="contenido">
+  <ol class="pasos" aria-label="Pasos del pago"><li class="hecho">1. Revisar ✓</li><li class="hecho">2. Pagar ✓</li><li aria-current="step">3. Comprobante</li></ol>
+  <div class="check" aria-hidden="true">✓</div>
+  <h1 id="titulo" tabindex="-1" style="text-align:center">Pago realizado</h1>
+  <!-- R6 · P5: confirma el envío al correo y que quedó guardado -->
+  <div id="aviso" class="aviso ok" role="status"></div>
+  <section class="panel" aria-label="Comprobante"><dl id="detalle"></dl></section>
+  <div class="acciones">
+    <button type="button" class="primario" id="imprimir">Descargar o imprimir comprobante</button>
+    <a class="btn secundario" href="historial.html">Ver historial de pagos</a>
+    <a class="btn texto" href="inicio.html">Volver al inicio</a>
+  </div>
+  <p class="demo">Teclado: Tab recorre los botones · Enter activa · Esc vuelve al inicio.</p>
+</main>
+<script src="comun.js"></script>
+<script>
+  const m = metodoActual();
+  const ver = qs.get('ver');                                    // ver = comprobante abierto desde el historial
+  const hist = leerHistorial();
+  let reg = ver ? hist.find(h => h.num === ver) : null;
+  if (!reg) {
+    const correo = qs.get('correo') || 'estudiante@uta.edu.ec';
+    const n = 'PA-2026-' + String(413 + hist.length).padStart(4, '0');
+    reg = { num:n, fecha:new Date().toLocaleString('es-EC'), metodo:m, fin:qs.get('fin')||'', banco:qs.get('banco')||'',
+            correo, sub:subtotal(), com:METODOS[m].comision, total:totalDe(m) };
+    if (!hist.some(h => h.num === n)) { hist.unshift(reg); guardarHistorial(hist); }
+  }
+  const tapado = c => c.replace(/^(.)[^@]*(@.*)$/, '$1••••$2');
+  const medio = reg.metodo === 'tarjeta' ? 'Tarjeta •••• ' + reg.fin : 'Transferencia · ' + reg.banco;
+  const filas = [['N.º de comprobante', reg.num], ['Fecha', reg.fecha], ['Concepto', 'Matrícula ordinaria + seguro'],
+                 ['Método', medio], ['Subtotal', usd(reg.sub)], ['Comisión (anunciada en Inicio)', usd(reg.com)]];
+  document.getElementById('detalle').innerHTML = filas.map(f => '<dt>'+f[0]+'</dt><dd>'+f[1]+'</dd>').join('') +
+    '<dt class="t">Total pagado = total aceptado</dt><dd class="t">' + usd(reg.total) + '</dd>';
+  document.getElementById('aviso').innerHTML = 'Enviamos el comprobante a <b>' + tapado(reg.correo) + '</b> y quedó guardado en su <a href="historial.html">historial de pagos</a>.';
+  document.getElementById('imprimir').onclick = () => window.print();
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') location.href = 'inicio.html'; });
+  document.getElementById('titulo').focus();
+</script>
+</body>
+</html>
