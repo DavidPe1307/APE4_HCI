@@ -53,3 +53,7 @@ Continuación de la **Prueba Práctica Integradora** (caso *Pagos académicos*, 
 - **Partir del resultado de la prueba** (la v2 de IHC-03) en lugar de empezar de cero, para iterar sobre evidencia: v1 de la prueba → sesión con P1 (29/10) → v2 → diagnóstico de la APE.
 - **Una sola tarjeta (IHC-03)**, porque tiene más datos medidos: P1 necesitó ayuda y no notó la comisión.
 - **Predicción y dato medido se distinguen** desde la Fase 1 (`tipo_dato` en el CSV y §6 del diagnóstico).
+
+## Prototipo accesible
+- v2 (con las correcciones): https://davidpe1307.github.io/APE4_HCI/APE4-integral/prototipo/v2/inicio.html
+- v1 (probada con P01 y P02): https://davidpe1307.github.io/APE4_HCI/APE4-integral/prototipo/v1/inicio.html
