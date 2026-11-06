@@ -43,7 +43,7 @@ Estas tres tareas se usan en la Fase 3 con P01 y P02.
 | Tarea | Lo que se le dice al participante | Criterio de éxito |
 |---|---|---|
 | **T1 Localizar** | «Quiere pagar su matrícula. Averigüe cuánto va a pagar en total y llegue a donde se paga.» | Dice el total ($92.50) y llega al formulario de pago sin ayuda |
-| **T2 Operar / corregir** | «Pague con la tarjeta 4111 1111 1111 1111 y su correo. Si algo sale mal, corríjalo.» | Llena los campos y corrige el error que aparezca sin perder lo escrito |
+| **T2 Operar / corregir** | «Paga con la Tarjeta A de esta hoja (4111 1111 1111 0000). Si algo sale mal, resuélvelo como harías en la vida real.» | Entiende por qué falló (fondos insuficientes) y se recupera con otra tarjeta o por transferencia sin volver a escribir todo |
 | **T3 Finalizar / confirmar** | «Termine el pago y dígame cómo sabe que quedó hecho y cuánto pagó.» | Llega al comprobante y dice el monto pagado ($92.50) |
 
 ---
