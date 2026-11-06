@@ -1,1 +1,11 @@
-participante,tarea,tiempo_s,exito,errores,comentario,emocion_observada
+participante,version,tarea,tiempo_min,tiempo_s,exito,errores,ayuda_dada,ruta_de_recuperacion,emocion_observada_conducta,emocion_valor_-2_a_+2,comentario_textual,heuristica_relacionada,facilitador
+P01,v1,T1,1.17,70,Sí,0,No,,sin reacción anotada,,,H1 · H5,Martín
+P01,v1,T2,0.33,20,Sí,0,No,Tarjeta B tras el rechazo de la Tarjeta A,Suspiró al ver el rechazo de la Tarjeta A,,,H5 · H9,Martín
+P01,v1,T3,0.33,20,Sí,0,No,,sin reacción anotada,,,H1,Martín
+P01,v1,A1-teclado,,,No realizado,,,Llegó al Historial con Shift+Tab; foco visible no observado,no anotado,,,Accesibilidad,Martín
+P01,v1,Preguntas finales,,,,,,,,,"Paráfrasis: lo más difícil fue la sensación de meter la tarjeta; dudó al meter la tarjeta; seguridad 4/5 porque la app da retroalimentación; sí confiaría porque es intuitivo; no supo qué cambiaría",,Martín
+P02,v1,T1,1.02,61,Sí,no anotado,no anotado,,no anotado,,,H1 · H5,David
+P02,v1,T2,0.9,54,Sí,no anotado,no anotado,no anotada,no anotado,,,H5 · H9,David
+P02,v1,T3,2.01,121,Sí,no anotado,no anotado,,no anotado,,,H1,David
+P02,v1,A1-teclado,,,Completó,no anotado,no anotado,,no anotado,,,Accesibilidad,David
+P02,v1,Preguntas finales,,,,,,,,,"«Saber como poner datos de la tarjeta» (lo más difícil) · «Cuando se generó la orden de pago» (dudó) · seguridad 4/5: «cumple con todas las restrucciones de pagos» · «Si, aunque aun faltaria la gratuidad de becario aun asi esta facil de usar» · «Nada para mi es un sistema perfecto»",,David
