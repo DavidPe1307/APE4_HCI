@@ -4,7 +4,7 @@
 **Responsables:** Martín → `inicio.html` · David → `pago.html`, `styles.css` · Sheyla → `confirmacion.html`, `historial.html`.
 
 ## Cómo abrirlo
-1. Doble clic en `index.html` (abre `inicio.html`). No necesita instalación ni servidor.
+1. Doble clic en `inicio.html`. No necesita instalación ni servidor.
 2. **Simulación del banco (Mago de Oz):** tarjeta que termina en **0000** = fondos insuficientes · en **0002** = tarjeta vencida · cualquier otra de 16 dígitos = pago aprobado.
 3. Teclado: `Tab` / `Shift+Tab` mueven el foco · `Enter` activa · `Esc` cierra el modal o abre «¿Salir sin pagar?».
 
