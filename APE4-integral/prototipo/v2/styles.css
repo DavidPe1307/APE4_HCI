@@ -1,5 +1,5 @@
 /* APE 4 · Prototipo v1 · basado en prototipo/v2 de la Prueba Integradora (IHC-03) */
-:root{--fondo:#f5f6f8;--tinta:#1d2733;--suave:#5a6472;--borde:#c9d0d9;--acento:#1f5fbf;--acento-osc:#174a96;--error:#b3261e;--error-f:#fdecea;--ok:#1b6e3c;--ok-f:#e7f4ec;--foco:#ffb000}
+:root{--fondo:#f5f6f8;--tinta:#1d2733;--suave:#5a6472;--borde:#c9d0d9;--acento:#1f5fbf;--acento-osc:#174a96;--error:#b3261e;--error-f:#fdecea;--ok:#1b6e3c;--ok-f:#e7f4ec;--foco:#174a96;--foco-oscuro:#ffb000}
 *{box-sizing:border-box}
 body{margin:0;font:16px/1.5 system-ui,"Segoe UI",Arial,sans-serif;background:var(--fondo);color:var(--tinta)}
 .saltar{position:absolute;left:-999px;top:8px;background:#000;color:#fff;padding:8px 12px;border-radius:6px;z-index:50}
@@ -49,6 +49,8 @@ button:disabled{opacity:.65;cursor:not-allowed}
 @keyframes g{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation-duration:2.5s}*{transition:none!important}}
 :focus-visible{outline:3px solid var(--foco);outline-offset:2px}
+/* HL-03 (#25): el foco usa azul oscuro (8,55:1 sobre blanco · 7,91:1 sobre el fondo); en la barra oscura se mantiene el amarillo (8,24:1) */
+.barra :focus-visible{outline-color:var(--foco-oscuro)}
 .pasos{display:flex;gap:.4rem;list-style:none;padding:0;margin:0 0 .75rem;font-size:.85rem}
 .pasos li{flex:1;text-align:center;padding:.35rem .2rem;border-bottom:3px solid var(--borde);color:var(--suave)}
 .pasos li.hecho{border-color:var(--ok);color:var(--ok)}
