@@ -198,9 +198,33 @@ $('f').addEventListener('submit', e => {
   if (enviando) return;                       // un solo cobro aunque se pulse varias veces
   $('estado').innerHTML = '';
   if (!validarTodo()) return;
+  mostrarConfirmacion();                      // HL-02 (#24): resumen y confirmación antes de cobrar
+});
+
+/* ---------- HL-02 (#24): «Revise antes de pagar» y estado claro mientras se procesa ---------- */
+function mostrarConfirmacion(){
+  const num = $('tarjeta') ? $('tarjeta').value.replace(/\s/g,'') : '';
+  const medio = metodo === 'tarjeta' ? 'Tarjeta •••• ' + num.slice(-4) : 'Transferencia · ' + ($('banco') ? $('banco').value : '');
+  const correo = $('correo').value.trim().replace(/^(.)[^@]*(@.*)$/, '$1••••$2');
+  $('estado').innerHTML = '<div class="aviso info" role="region" aria-labelledby="c-t"><b id="c-t" tabindex="-1">Revise antes de pagar</b>' +
+    '<div class="fila"><span>Va a pagar</span><b>' + usd(totalDe(metodo)) + '</b></div>' +
+    '<div class="fila"><span>Con</span><span>' + medio + '</span></div>' +
+    '<div class="fila"><span>A</span><span>Universidad Técnica de Ambato · matrícula</span></div>' +
+    '<div class="fila"><span>Comprobante a</span><span>' + correo + '</span></div>' +
+    '<p class="ayuda">Todavía no se ha cobrado nada. El cobro se hace una sola vez, al confirmar.</p>' +
+    '<div class="acciones"><button type="button" class="primario" id="confirmar">Confirmar pago · ' + usd(totalDe(metodo)) + '</button>' +
+    '<button type="button" class="secundario" id="revisar">Revisar mis datos</button></div></div>';
+  $('pagar').disabled = true;
+  $('confirmar').onclick = procesar;
+  $('revisar').onclick = () => { $('estado').innerHTML = ''; $('pagar').disabled = false; $(CAMPOS[metodo][0].id).focus(); };
+  $('confirmar').focus();
+}
+
+function procesar(){
+  if (enviando) return;                       // un solo cobro
   enviando = true;
-  const b = $('pagar'); b.disabled = true; b.innerHTML = '<span class="spin" aria-hidden="true"></span> Procesando…';
-  $('estado').innerHTML = '<div class="aviso info">Procesando el pago de ' + usd(totalDe(metodo)) + '… No cierre esta página ni vuelva a pulsar Pagar.</div>';
+  const b = $('pagar'); b.disabled = true; b.innerHTML = '<span class="spin" aria-hidden="true"></span> Enviando al banco…';
+  $('estado').innerHTML = '<div class="aviso info" role="status"><b>Enviando su pago de ' + usd(totalDe(metodo)) + ' al banco…</b><br>Tarda unos segundos. No cierre esta página: el cobro se hace una sola vez y en el siguiente paso verá su comprobante.</div>';
   setTimeout(() => {
     const num = $('tarjeta') ? $('tarjeta').value.replace(/\s/g,'') : '';
     let causa = null, campo = null;
@@ -223,7 +247,7 @@ $('f').addEventListener('submit', e => {
     $('estado').innerHTML = '<div class="aviso ok">Pago realizado. Abriendo su comprobante…</div>';
     setTimeout(() => location.href = 'confirmacion.html?' + p.toString(), 600);
   }, 1600);
-});
+}
 
 pintarCampos(); ayudaTarjeta(); pintarResumen();
 $('titulo').focus();
