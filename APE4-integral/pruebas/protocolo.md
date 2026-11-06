@@ -28,7 +28,7 @@ Se registra en la hoja: **Acepta: Sí / No** y la hora.
 | Anotador / observador | Sheyla | Llena la hoja de observación: errores, citas textuales, emociones observadas y heurísticas |
 
 ## 4. Preparación (antes de cada participante)
-1. Abrir `APE4-integral/prototipo/v1/index.html` en una **ventana de incógnito nueva**, para que el historial empiece vacío.
+1. Abrir `APE4-integral/prototipo/v1/inicio.html` en una **ventana de incógnito nueva**, para que el historial empiece vacío.
 2. Dejar la pantalla en **Inicio** y el cursor fuera de la página.
 3. Tener a mano la **tarjeta de datos** (sección 5), el cronómetro y una **hoja de observación** por participante.
 4. Comprobar con el equipo que la tarjeta `…0000` da **rechazo por fondos insuficientes** y que la `…1111` da **pago aprobado**.
