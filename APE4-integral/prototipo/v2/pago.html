@@ -4,6 +4,15 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pagar matrícula · Formulario · APE v1</title>
 <link rel="stylesheet" href="styles.css">
+<style>
+/* HL-01 (#23): ayuda visual para encontrar los datos de la tarjeta */
+.donde{margin:.35rem 0 0;border:1px solid var(--borde);border-radius:8px;background:#fff}
+.donde summary{cursor:pointer;padding:.5rem .75rem;font-weight:600;color:var(--acento)}
+.donde[open] summary{border-bottom:1px solid var(--borde)}
+.donde .tarjetas{display:flex;gap:.75rem;flex-wrap:wrap;padding:.75rem}
+.donde svg{width:100%;max-width:15rem;height:auto}
+.donde ol{margin:0;padding:0 .75rem .75rem 2rem;font-size:.9rem}
+</style>
 </head>
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -126,6 +135,37 @@ function pintarResumen(){
   $('cambiar').href = 'inicio.html?metodo=' + metodo;
 }
 
+/* ---------- HL-01 (#23): «¿Dónde encuentro estos datos?» con un dibujo de la tarjeta ---------- */
+function ayudaTarjeta(){
+  if (!$('a-tarjeta')) return;
+  const d = document.createElement('details');
+  d.className = 'donde';
+  d.innerHTML = '<summary>¿Dónde encuentro estos datos?</summary>' +
+    '<div class="tarjetas">' +
+    '<svg viewBox="0 0 240 150" role="img" aria-labelledby="sv-f"><title id="sv-f">Frente de la tarjeta: 1 número de 16 dígitos, 2 vencimiento</title>' +
+    '<rect x="2" y="2" width="236" height="146" rx="12" fill="#eef4ff" stroke="#1f5fbf" stroke-width="2"/>' +
+    '<rect x="18" y="26" width="34" height="26" rx="4" fill="#c9d0d9"/>' +
+    '<rect x="14" y="72" width="212" height="26" rx="5" fill="#fff" stroke="#1d2733" stroke-width="2"/>' +
+    '<text x="120" y="90" text-anchor="middle" font-size="15" font-family="monospace" fill="#1d2733">4111 1111 1111 1111</text>' +
+    '<circle cx="226" cy="72" r="10" fill="#1d2733"/><text x="226" y="76" text-anchor="middle" font-size="12" fill="#fff">1</text>' +
+    '<rect x="150" y="108" width="64" height="24" rx="5" fill="#fff" stroke="#1d2733" stroke-width="2"/>' +
+    '<text x="182" y="125" text-anchor="middle" font-size="13" font-family="monospace" fill="#1d2733">12/29</text>' +
+    '<circle cx="214" cy="108" r="10" fill="#1d2733"/><text x="214" y="112" text-anchor="middle" font-size="12" fill="#fff">2</text>' +
+    '<text x="20" y="125" font-size="11" fill="#5a6472">FRENTE</text></svg>' +
+    '<svg viewBox="0 0 240 150" role="img" aria-labelledby="sv-r"><title id="sv-r">Reverso de la tarjeta: 3 código de seguridad de 3 números</title>' +
+    '<rect x="2" y="2" width="236" height="146" rx="12" fill="#eef4ff" stroke="#1f5fbf" stroke-width="2"/>' +
+    '<rect x="2" y="22" width="236" height="28" fill="#1d2733"/>' +
+    '<rect x="18" y="68" width="150" height="26" fill="#fff" stroke="#c9d0d9"/>' +
+    '<rect x="172" y="68" width="48" height="26" rx="5" fill="#fff" stroke="#1d2733" stroke-width="2"/>' +
+    '<text x="196" y="86" text-anchor="middle" font-size="14" font-family="monospace" fill="#1d2733">123</text>' +
+    '<circle cx="220" cy="68" r="10" fill="#1d2733"/><text x="220" y="72" text-anchor="middle" font-size="12" fill="#fff">3</text>' +
+    '<text x="20" y="125" font-size="11" fill="#5a6472">REVERSO</text></svg></div>' +
+    '<ol><li><b>Número de tarjeta:</b> los 16 números grandes del frente.</li>' +
+    '<li><b>Vencimiento:</b> mes/año que dice «válida hasta» o «VENCE», al frente.</li>' +
+    '<li><b>Código de seguridad:</b> los 3 números al lado de la firma, en el reverso.</li></ol>';
+  $('m-tarjeta').after(d);
+}
+
 /* ---------- Cancelar / Esc con confirmación (R4 · P2) ---------- */
 const hayDatos = () => CAMPOS[metodo].some(f => $(f.id) && $(f.id).value.trim() !== '');
 let focoPrevio = null;
@@ -185,7 +225,7 @@ $('f').addEventListener('submit', e => {
   }, 1600);
 });
 
-pintarCampos(); pintarResumen();
+pintarCampos(); ayudaTarjeta(); pintarResumen();
 $('titulo').focus();
 </script>
 </body>
