@@ -1,8 +1,8 @@
 participante,version,tarea,tiempo_s,exito,errores,ayuda_dada,ruta_de_recuperacion,emocion_observada_conducta,emocion_valor_-2_a_+2,comentario_textual,heuristica_relacionada
-P01,v1,T1,,Sí,,no anotado,,no anotado,,,H1 · H5
-P01,v1,T2,,Sí,,no anotado,no anotado,no anotado,,,H5 · H9
-P01,v1,T3,,Sí,,no anotado,,no anotado,,,H1
-P01,v1,A1-teclado,,Completó,,no anotado,no anotado,no anotado,,,Accesibilidad
+P01,v1,T1,70,Sí,0,No,,no anotado,,"Nota (no es cita): datos de la hoja de la anotadora (Sheyla), por verificar contra la hoja original. Cronómetro de David: 1.02, unidad sin confirmar.",H1 · H5
+P01,v1,T2,20,Sí,0,No,Tarjeta B tras el rechazo de la Tarjeta A,Suspiró al ver el rechazo de la Tarjeta A,,"Nota (no es cita): datos de la hoja de la anotadora (Sheyla), por verificar. Cronómetro de David: 0.9, unidad sin confirmar.",H5 · H9
+P01,v1,T3,20,Sí,0,No,,no anotado,,"Nota (no es cita): datos de la hoja de la anotadora (Sheyla), por verificar. Cronómetro de David: 2.01, unidad sin confirmar.",H1
+P01,v1,A1-teclado,,Sin acuerdo,,no anotado,Llegó al Historial con Shift+Tab; foco visible no observado,no anotado,,"Nota (no es cita): Sheyla anota «no realizado (T1 completa con teclado)»; el registro de David anota «Completó». Por confirmar con la hoja original.",Accesibilidad
 P02,v1,T1,,,,,,,,,H1 · H5
 P02,v1,T2,,,,,,,,,H5 · H9
 P02,v1,T3,,,,,,,,,H1
