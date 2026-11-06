@@ -1,1 +1,9 @@
-participante,tarea,tiempo_s,exito,errores,comentario,emocion_observada
+participante,version,tarea,tiempo_s,exito,errores,ayuda_dada,ruta_de_recuperacion,emocion_observada_conducta,emocion_valor_-2_a_+2,comentario_textual,heuristica_relacionada
+P01,v1,T1,,Sí,,no anotado,,no anotado,,,H1 · H5
+P01,v1,T2,,Sí,,no anotado,no anotado,no anotado,,,H5 · H9
+P01,v1,T3,,Sí,,no anotado,,no anotado,,,H1
+P01,v1,A1-teclado,,Completó,,no anotado,no anotado,no anotado,,,Accesibilidad
+P02,v1,T1,,,,,,,,,H1 · H5
+P02,v1,T2,,,,,,,,,H5 · H9
+P02,v1,T3,,,,,,,,,H1
+P02,v1,A1-teclado,,,,,,,,,Accesibilidad
