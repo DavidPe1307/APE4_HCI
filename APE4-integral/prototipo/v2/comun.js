@@ -1,5 +1,5 @@
 /* Datos compartidos del caso IHC-03 · APE 4 v1 */
-const VERSION = 'APE v1';
+const VERSION = 'APE v2';
 const RUBROS = [['Matrícula ordinaria', 85], ['Seguro estudiantil', 5]];
 const METODOS = {
   tarjeta:       { nombre: 'Tarjeta de crédito o débito', comision: 2.50, detalle: 'Se acredita al instante' },
