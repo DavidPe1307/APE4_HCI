@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagar matrícula · Inicio · APE v1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+<header class="barra"><strong>Portal de Pagos Académicos · UTA</strong><span class="version" data-version></span><a href="historial.html">Historial de pagos</a></header>
+<main id="contenido">
+  <ol class="pasos" aria-label="Pasos del pago"><li aria-current="step">1. Revisar</li><li>2. Pagar</li><li>3. Comprobante</li></ol>
+  <p class="entidad">Paga: <b>usted (estudiante)</b> · A: <b>Universidad Técnica de Ambato</b> · Concepto: <b>matrícula</b></p>
+  <h1 id="titulo" tabindex="-1">Pagar matrícula</h1>
+  <p>Revise cuánto pagará y elija cómo pagar <b>antes</b> de continuar.</p>
+
+  <section class="panel" aria-labelledby="t-detalle">
+    <h2 id="t-detalle" style="font-size:1rem;margin:0 0 .5rem">Detalle de la matrícula</h2>
+    <div id="rubros"></div>
+    <div class="fila"><span>Comisión del método elegido</span><span id="comision"></span></div>
+    <div class="fila total"><span>Total a pagar</span><span id="total"></span></div>
+  </section>
+
+  <!-- R2 · P3: el becado compara la comisión de cada método antes de aceptar -->
+  <fieldset>
+    <legend>¿Cómo quiere pagar?</legend>
+    <div id="metodos"></div>
+  </fieldset>
+  <p id="vivo" class="sr" aria-live="polite"></p>
+
+  <div class="acciones">
+    <a id="continuar" class="btn primario" href="pago.html">Continuar al pago</a>
+  </div>
+  <p class="demo">Prototipo APE 4 · IHC-03 · datos simulados.</p>
+</main>
+<script src="comun.js"></script>
+<script>
+  let metodo = metodoActual();
+  document.getElementById('rubros').innerHTML = RUBROS.map(r => '<div class="fila"><span>' + r[0] + '</span><span>' + usd(r[1]) + '</span></div>').join('');
+  document.getElementById('metodos').innerHTML = Object.entries(METODOS).map(([k, m]) =>
+    '<label class="opcion"><input type="radio" name="metodo" value="' + k + '"' + (k === metodo ? ' checked' : '') + '>' +
+    '<span><b>' + m.nombre + ' · comisión ' + usd(m.comision) + '</b><small>' + m.detalle + ' · total ' + usd(totalDe(k)) + '</small></span></label>').join('');
+  function pintar(anunciar){
+    document.getElementById('comision').textContent = usd(METODOS[metodo].comision);
+    document.getElementById('total').textContent = usd(totalDe(metodo));
+    const c = document.getElementById('continuar');
+    c.textContent = 'Continuar al pago · Total ' + usd(totalDe(metodo));
+    c.href = 'pago.html?metodo=' + metodo;
+    if (anunciar) document.getElementById('vivo').textContent = 'Total actualizado: ' + usd(totalDe(metodo));
+  }
+  document.querySelectorAll('input[name=metodo]').forEach(r => r.addEventListener('change', e => { metodo = e.target.value; pintar(true); }));
+  pintar(false);
+  document.getElementById('titulo').focus();
+</script>
+</body>
+</html>
